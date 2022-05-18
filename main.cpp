@@ -1,21 +1,43 @@
+#include <thread>
 #include <iostream>
+#include <unistd.h>
 #include <experimental/filesystem>
 #include "Controller.hpp"
 #include "Display.hpp"
 
 namespace fs = std::experimental::filesystem::v1;
 
-int main()
+Controller* ctrl_ptr;
+Display* disp_ptr;
+
+void displayTask()
 {
-    Controller* ctrl = new Controller();
-    //Display *disp = new Display();
-    
     while (true)
     {
-        std::cout << "updating"<<std::endl;
-        ctrl->update();
-        //disp->update();
+        std::cout << "display"<<std::endl;
+        usleep(2000000);
     }
+}
+
+void controllerTask()
+{
+    while(true)
+    {
+        ctrl_ptr->update();
+    }
+}
+
+int main()
+{
+    ctrl_ptr = new Controller();
+    disp_ptr = new Display();
+    
+    std::thread controllerThread(controllerTask);
+    std::thread displayThread(displayTask);
+
+    controllerThread.join();
+    displayThread.join();
+
     return 0;
 }
 
