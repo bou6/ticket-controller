@@ -1,17 +1,25 @@
-#include <SDL2/SDL.h>        
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 #include <iostream>
-#include <ctime>
+#include <experimental/filesystem>
+#include "Controller.hpp"
+#include "Display.hpp"
 
-constexpr int images_array_size= 3;
+namespace fs = std::experimental::filesystem::v1;
 
-char* images_array[3]= {
-    "146.jpg",
-    "147.jpg",
-    "148.jpg"
-};
- 
+int main()
+{
+    Controller* ctrl = new Controller();
+    //Display *disp = new Display();
+    
+    while (true)
+    {
+        std::cout << "updating"<<std::endl;
+        ctrl->update();
+        //disp->update();
+    }
+    return 0;
+}
+
+#if 0
 int main(int argc, char ** argv)
 {
     bool quit = false;
@@ -21,14 +29,16 @@ int main(int argc, char ** argv)
     time_t timeout=5;
     int image_index=0;
 
+    std::cout<< __cplusplus <<std::endl;
+    std::cout << __FILE__<< std::endl;
+
     SDL_Init(SDL_INIT_VIDEO);
 
     TTF_Init();
 
     IMG_Init(IMG_INIT_JPG);
 
-    SDL_Window * window = SDL_CreateWindow("SDL2 Displaying Image",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+    SDL_Window * window = SDL_CreateWindow("SDL2 Displaying Image", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
 
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
 
@@ -92,3 +102,4 @@ int main(int argc, char ** argv)
  
     return 0;
 }
+#endif
