@@ -26,6 +26,7 @@ class Display
     int m_image_index;
 
     public:
+    bool m_quit;
     Display();
     ~Display();
     void update();

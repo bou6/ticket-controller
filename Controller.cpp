@@ -5,10 +5,13 @@
 #include <string.h>
 #include <fcntl.h>
 
+
 #define PORT 8080
 
-Controller::Controller():
-m_counters(10,0)
+Controller::Controller(Display* disp_ptr):
+m_counters(10,0),
+m_disp_ptr(disp_ptr),
+m_quit(false)
 {
     int opt = 1;
     int addrlen = sizeof(address);
@@ -45,7 +48,14 @@ void Controller::update()
     int new_socket, valread;
     int addrlen = sizeof(address);
     char buffer[1024] = { 0 };
-     char* hello = "Hello from server";
+    char* hello = "Hello from server";
+
+    if (m_disp_ptr->m_quit)
+    {
+        m_quit = true;
+        std::cout<< "quitting the Controller" <<std::endl;
+        return;
+    }
 
     if (listen(server_fd, 3) < 0) {
         perror("listen");

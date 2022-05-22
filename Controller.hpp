@@ -4,6 +4,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include<vector>
+#include "Display.hpp"
 
 class Controller
 {
@@ -13,6 +14,7 @@ private:
     std::vector<int> m_counters;
     int server_fd;
     struct sockaddr_in address;
+    Display* m_disp_ptr;
 
     enum{
         UP_START_POS =0,
@@ -31,7 +33,8 @@ private:
     }VAL_CMD_POS_IN_ARRAY;
 
 public:
-    Controller(void);
+    Controller(Display* disp_ptr);
+    bool m_quit;
     void update();
     int handleRxData(char* buffer, int cnt);
     int getCounter();

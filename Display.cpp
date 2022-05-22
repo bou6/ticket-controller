@@ -3,7 +3,8 @@
 #include <ctime>
 
 Display::Display():
-    m_image_index(0)
+    m_image_index(0),
+    m_quit(false)
 {
     time_t current_time;
 
@@ -25,50 +26,47 @@ Display::Display():
 
 void Display::update()
 {
-    bool quit = false;
     SDL_Event event;
     time_t start_time;
     time_t current_time;
     time_t timeout=5;
 
-    if (!quit)
+    std::cout << "waiting for event"<< std::endl;
+    SDL_WaitEventTimeout(&event,1000);
+    switch (event.type)
     {
-        SDL_WaitEventTimeout(&event,100);
-        switch (event.type)
-        {
-            case SDL_QUIT:
-                quit = true;
-                break;
-        }
-
-        time(&current_time);
-        std::cout << "current_time ="<<current_time<<"start_time ="<<start_time <<"timeout = "<<timeout<<std::endl;
-        if (current_time - start_time > timeout)
-        {
-            start_time = current_time;
-            m_image_index = (m_image_index+1)%images_array_size;
-            std::cout << "change next image index = " << m_image_index <<std::endl;
-            m_texture = IMG_LoadTexture(m_renderer, images_array[m_image_index]);
-        }
-        
-        SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
-
-        // print the text 
-        {
-            char text[3];
-            sprintf(text, "%d", m_image_index);
-
-            SDL_Surface * surface = TTF_RenderText_Solid(m_font, text, color);
-            SDL_Texture * nr_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-            int texW = 100;
-            int texH = 0;
-            SDL_QueryTexture(nr_texture, NULL, NULL, &texW, &texH);
-            SDL_Rect dstrect = { 0, 0, texW, texH };
-            /* render the text */
-            SDL_RenderCopy(m_renderer, nr_texture, NULL, &dstrect);
-        }
-        SDL_RenderPresent(m_renderer);
+        case SDL_QUIT:
+            m_quit = true;
+            return;
     }
+
+    time(&current_time);
+    std::cout << "current_time ="<<current_time<<" start_time ="<<start_time <<" timeout = "<<timeout<<std::endl;
+    if (current_time - start_time > timeout)
+    {
+        start_time = current_time;
+        m_image_index = (m_image_index+1)%images_array_size;
+        std::cout << "change next image index = " << m_image_index <<std::endl;
+        m_texture = IMG_LoadTexture(m_renderer, images_array[m_image_index]);
+    }
+    
+    SDL_RenderCopy(m_renderer, m_texture, NULL, NULL);
+
+    // print the text 
+    {
+        char text[3];
+        sprintf(text, "%d", m_image_index);
+
+        SDL_Surface * surface = TTF_RenderText_Solid(m_font, text, color);
+        SDL_Texture * nr_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+        int texW = 100;
+        int texH = 0;
+        SDL_QueryTexture(nr_texture, NULL, NULL, &texW, &texH);
+        SDL_Rect dstrect = { 0, 0, texW, texH };
+        /* render the text */
+        SDL_RenderCopy(m_renderer, nr_texture, NULL, &dstrect);
+    }
+    SDL_RenderPresent(m_renderer);
  }
 
  Display::~Display()
