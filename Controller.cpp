@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <poll.h>
 
 
 #define PORT 8080
@@ -49,6 +50,7 @@ void Controller::update()
     int addrlen = sizeof(address);
     char buffer[1024] = { 0 };
     char* hello = "Hello from server";
+    struct pollfd pfds[1];
 
     if (m_disp_ptr->quit())
     {
@@ -56,35 +58,42 @@ void Controller::update()
         std::cout<< "quitting the Controller" <<std::endl;
         return;
     }
-    std::cout <<"1"<<std::endl;
 
     if (listen(server_fd, 3) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
 
-    std::cout <<"2"<<std::endl;
-    if ((new_socket
-         = accept(server_fd, (struct sockaddr*)&address,
-                  (socklen_t*)&addrlen))
-        < 0) {
-        perror("accept");
-        exit(EXIT_FAILURE);
-    }
-
-    std::cout <<"3"<<std::endl;
-    valread = read(new_socket, buffer, 1024);
-    int ret = handleRxData(buffer, 1024);
-    if (ret<0)
+    pfds[0].fd = server_fd;
+    pfds[0].events = POLLIN; 
+    if (poll (pfds, 1, 1000)>0)
     {
-        char* response= "command not recognised";
-        send(new_socket, response, strlen(response), 0);
+        if ((new_socket = accept(server_fd, (struct sockaddr*)&address,(socklen_t*)&addrlen))< 0) 
+        {
+            perror("accept");
+            exit(EXIT_FAILURE);
+        }
+
+        std::cout <<"3"<<std::endl;
+        valread = read(new_socket, buffer, 1024);
+        int ret = handleRxData(buffer, 1024);
+        if (ret<0)
+        {
+            char* response= "command not recognised";
+            send(new_socket, response, strlen(response), 0);
+        }
+        else
+        {
+            char* response= "command executed";
+            send(new_socket, response, strlen(response), 0);
+        }
+
     }
     else
     {
-        char* response= "command executed";
-        send(new_socket, response, strlen(response), 0);
+        std::cout << "No data received !"<<std::endl;
     }
+
     return;
 }
 
