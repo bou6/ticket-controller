@@ -1,6 +1,7 @@
 #ifndef DISPLAY_HPP
 #define DISPLAY_HPP
 #include <ctime>
+#include <mutex>
 #include <SDL2/SDL.h>        
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -14,6 +15,8 @@ class Display
     SDL_Color color;
     SDL_Texture * m_texture;
     time_t start_time;
+    bool m_quit;
+    std::mutex quit_mutex;
 
     static constexpr int images_array_size= 3;
     char* images_array[3]= {
@@ -26,10 +29,11 @@ class Display
     int m_image_index;
 
     public:
-    bool m_quit;
+    
     Display();
     ~Display();
     void update();
+    bool quit();
 };
 
  #endif 

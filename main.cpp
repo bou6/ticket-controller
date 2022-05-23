@@ -5,15 +5,15 @@
 #include "Display.hpp"
 
 // TODO 
-// m_quit of display is read as well from the controller so it should be protected by a mutex provide a function for this
 // the controller is blocked on the socket receiving this is why it stays blocked when the display is quit, need to add a timeout to the socket listenning
+// The display update, if you move or do an event in the winodw then the frequencey of diplaying the pictures will change
 
 Controller* ctrl_ptr;
 Display* disp_ptr;
 
 void displayTask()
 {
-    while (!disp_ptr->m_quit)
+    while (!disp_ptr->quit())
     {
         disp_ptr->update();
     }

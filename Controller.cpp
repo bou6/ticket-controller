@@ -17,7 +17,7 @@ m_quit(false)
     int addrlen = sizeof(address);
 
     // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0))
+    if ((server_fd = socket(AF_INET, SOCK_STREAM , 0))
         == 0) {
         perror("socket failed");
         exit(EXIT_FAILURE);
@@ -50,17 +50,20 @@ void Controller::update()
     char buffer[1024] = { 0 };
     char* hello = "Hello from server";
 
-    if (m_disp_ptr->m_quit)
+    if (m_disp_ptr->quit())
     {
         m_quit = true;
         std::cout<< "quitting the Controller" <<std::endl;
         return;
     }
+    std::cout <<"1"<<std::endl;
 
     if (listen(server_fd, 3) < 0) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
+
+    std::cout <<"2"<<std::endl;
     if ((new_socket
          = accept(server_fd, (struct sockaddr*)&address,
                   (socklen_t*)&addrlen))
@@ -68,6 +71,8 @@ void Controller::update()
         perror("accept");
         exit(EXIT_FAILURE);
     }
+
+    std::cout <<"3"<<std::endl;
     valread = read(new_socket, buffer, 1024);
     int ret = handleRxData(buffer, 1024);
     if (ret<0)

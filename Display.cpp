@@ -69,6 +69,12 @@ void Display::update()
     SDL_RenderPresent(m_renderer);
  }
 
+bool Display::quit()
+{
+    std::lock_guard<std::mutex> lock (quit_mutex);
+    return m_quit;
+}
+
  Display::~Display()
  {
     SDL_DestroyTexture(m_texture);
